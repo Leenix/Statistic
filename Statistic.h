@@ -17,6 +17,7 @@ class Statistic
 {
 public:
     Statistic(bool useStdDev = true);             // "switches on/off" stdev run time
+    Statistic(const Statistic &right);
     void clear(bool useStdDev = true);            // "switches on/off" stdev run time
     void add(const float);
 

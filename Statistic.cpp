@@ -62,7 +62,17 @@ Statistic::Statistic(bool useStdDev)
     clear(useStdDev);
 }
 
-void Statistic::clear(bool useStdDev)	// useStdDev default true.
+Statistic::Statistic(const Statistic &right)
+{
+    this->_cnt = right._cnt;
+    this->_sum = right._sum;
+    this->_min = right._min;
+    this->_max = right._max;
+    this->_useStdDev = right._useStdDev;
+    this->_ssqdif = right._ssqdif;
+}
+
+void Statistic::clear(bool useStdDev) // useStdDev default true.
 {
     _cnt = 0;
     _sum = 0;
@@ -81,9 +91,13 @@ void Statistic::add(const float value)
     {
         _min = value;
         _max = value;
-    } else {
-        if (value < _min) _min = value;
-        else if (value > _max) _max = value;
+    }
+    else
+    {
+        if (value < _min)
+            _min = value;
+        else if (value > _max)
+            _max = value;
     }
     _sum += value;
     _cnt++;
@@ -96,40 +110,47 @@ void Statistic::add(const float value)
         // ~10% faster but limits the amount of samples to 65K as _cnt*_cnt overflows
         // float _store = _sum - _cnt * value;
         // _ssqdif = _ssqdif + _store * _store / (_cnt*_cnt - _cnt);
-		//
-		// solution:  TODO verify
-		// _ssqdif = _ssqdif + (_store * _store / _cnt) / (_cnt - 1);
+        //
+        // solution:  TODO verify
+        // _ssqdif = _ssqdif + (_store * _store / _cnt) / (_cnt - 1);
     }
 }
 
 // returns the average of the data-set added sofar
 float Statistic::average() const
 {
-    if (_cnt == 0) return NAN; // prevent DIV0 error
+    if (_cnt == 0)
+        return NAN; // prevent DIV0 error
     return _sum / _cnt;
 }
 
-// Population standard deviation = s = sqrt [ S ( Xi - µ )2 / N ]
+// Population standard deviation = s = sqrt [ S ( Xi - ï¿½ )2 / N ]
 // http://www.suite101.com/content/how-is-standard-deviation-used-a99084
 float Statistic::variance() const
 {
-    if (!_useStdDev) return NAN;
-    if (_cnt == 0) return NAN; // prevent DIV0 error
+    if (!_useStdDev)
+        return NAN;
+    if (_cnt == 0)
+        return NAN; // prevent DIV0 error
     return _ssqdif / _cnt;
 }
 
 float Statistic::pop_stdev() const
 {
-    if (!_useStdDev) return NAN;
-    if (_cnt == 0) return NAN; // prevent DIV0 error
-    return sqrt( _ssqdif / _cnt);
+    if (!_useStdDev)
+        return NAN;
+    if (_cnt == 0)
+        return NAN; // prevent DIV0 error
+    return sqrt(_ssqdif / _cnt);
 }
 
 float Statistic::unbiased_stdev() const
 {
-    if (!_useStdDev) return NAN;
-    if (_cnt < 2) return NAN; // prevent DIV0 error
-    return sqrt( _ssqdif / (_cnt - 1));
+    if (!_useStdDev)
+        return NAN;
+    if (_cnt < 2)
+        return NAN; // prevent DIV0 error
+    return sqrt(_ssqdif / (_cnt - 1));
 }
 
 // -- END OF FILE --
